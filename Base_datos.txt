@@ -1,0 +1,96 @@
+db.createCollection("alumnos", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["nombre", "carrera", "email"],
+            properties: {
+                nombre:{
+                    bsonType: "string",
+                    description: "debe ser un string y es requerido"
+                },
+                carrera: {
+                    bsonType: "string",
+                    description: "debe ser un string y es requerido"
+                },
+                email: {
+                    bsonType: "string",
+                    description: "debe ser un string y cumplir con la regla"
+                },
+                fecha_nac: {
+                    bsonType: "date",
+                    description: "se debe agregar como objeto fecha"
+                },
+                edad: {
+                    bsonType: "int",
+                    description: "Edad como entero"
+                },
+                situacion: {
+                    enum: ["Regular", "Irregular"],
+                    description: "puede ser alguno de los valores definidos"
+                },
+                telefono: {
+                    bsonType: "long",
+                    description: "Debe incluir digitos"
+                },
+                activo: {
+                    bsonType: "bool",
+                    description: "puede ser verdadero o falso"
+                }
+            }
+        }
+    }
+})
+
+db.createCollection("situaciones", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            properties: {
+                situacion: {
+                    bsonType: "string",
+                    description: "situacion Actual alumno"
+                },
+                descripcion: {
+                    bsonType: "string",
+                    description: "Descripcion Situacion"
+                }
+            }
+        }
+    }
+})
+
+db.situaciones.insertMany([{Situacion: "Regular", description: "Esta al corriente con la curricula"},
+{Situacion: "Irregular", description: "Adeuda materias o es rezagado"}]);
+
+db.alumnos.insertOne({nombre: "Adrian Gutierrez", carrera: "Ingenieria Civil", email: "adrian.gutierrez@codellege.net",
+fecha_nac:new Date('Oct 4, 1993'), Situacion: "Irregular", activo:false, edad:NumberInt(26),
+telefono: NumberLong(3395748989)});
+
+
+db.alumnos.aggregate([{ $match: { situacion: "Regular"} }]);
+
+db.alumnos.aggregate([{ $match: { situacion: "Regular"} }, 
+{ $group: { _id: null, total: { $sum: "$edad"}}]);
+
+db.alumnos.aggregate([ { $group: { _id: "$situacion", total: { $sum: "$edad"}}}]);
+
+db.alumno.mapReduce{
+    function() { emit(this.situacion, this.edad)},
+    function(key, values) { return Array.sum(values)},
+    {
+
+    }
+}
+
+db.orders.insertMany([
+{​​_id:1,cust_id:"AntO.Knee",ord_date:newDate("2020-03-01"),price:25,items:[{​​sku:"oranges",qty:5,price:2.5}​​,{​​sku:"apples",qty:5,price:2.5}​​],status:"A"}​​,
+{​​_id:2,cust_id:"AntO.Knee",ord_date:newDate("2020-03-08"),price:70,items:[{​​sku:"oranges",qty:8,price:2.5}​​,{​​sku:"chocolates",qty:5,price:10}​​],status:"A"}​​,
+{​​_id:3,cust_id:"BusbyBee",ord_date:newDate("2020-03-08"),price:50,items:[{​​sku:"oranges",qty:10,price:2.5}​​,{​​sku:"pears",qty:10,price:2.5}​​],status:"A"}​​,
+{​​_id:4,cust_id:"BusbyBee",ord_date:newDate("2020-03-18"),price:25,items:[{​​sku:"oranges",qty:10,price:2.5}​​],status:"A"}​​,
+{​​_id:5,cust_id:"BusbyBee",ord_date:newDate("2020-03-19"),price:50,items:[{​​sku:"chocolates",qty:5,price:10}​​],status:"A"}​​,
+{​​_id:6,cust_id:"CamElot",ord_date:newDate("2020-03-19"),price:35,items:[{​​sku:"carrots",qty:10,price:1.0}​​,{​​sku:"apples",qty:10,price:2.5}​​],status:"A"}​​,
+{​​_id:7,cust_id:"CamElot",ord_date:newDate("2020-03-20"),price:25,items:[{​​sku:"oranges",qty:10,price:2.5}​​],status:"A"}​​,
+{​​_id:8,cust_id:"DonQuis",ord_date:newDate("2020-03-20"),price:75,items:[{​​sku:"chocolates",qty:5,price:10}​​,{​​sku:"apples",qty:10,price:2.5}​​],status:"A"}​​,
+{​​_id:9,cust_id:"DonQuis",ord_date:newDate("2020-03-20"),price:55,items:[{​​sku:"carrots",qty:5,price:1.0}​​,{​​sku:"apples",qty:10,price:2.5}​​,{​​sku:"oranges",qty:10,price:2.5}​​],status:"A"}​​,
+{​​_id:10,cust_id:"DonQuis",ord_date:newDate("2020-03-23"),price:25,items:[{​​sku:"oranges",qty:10,price:2.5}​​],status:"A"}​​
+]);
